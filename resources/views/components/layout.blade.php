@@ -6,7 +6,14 @@
   <title>Laravel</title>
   <link href="{{ asset('css/app.css') }}" rel="stylesheet">
 </head>
-<body class="antialiased">
-  {{ $slot }}
+<body class="antialiased bg-gray-50">
+  <div class="max-w-screen-xl mx-auto">
+    <header>
+      <h1 class="text-2xl font-medium pt-2 pb-3">Yaruka Web Assignment</h1>
+    </header>
+    <div>
+      {{ $slot }}
+    </div>
+  </div>
 </body>
 </html>
