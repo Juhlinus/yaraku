@@ -59,4 +59,23 @@ class BookListingTest extends TestCase
         $response->assertRedirect('/');
         $this->assertCount(0, Book::all());
     }
+
+    /** @test */
+    public function it_can_update_an_author_on_a_book(): void
+    {
+        $author = $this->faker->name;
+
+        $book = Book::factory()
+            ->create([
+                'title' => $this->faker->sentence,
+                'author' => $author,
+            ]);
+
+        $response = $this->put('books/' . $book->id, [
+            'author' => $this->faker->name,
+        ]);
+
+        $response->assertRedirect('/');
+        $this->assertNotEquals($author, Book::first()->author);
+    }
 }

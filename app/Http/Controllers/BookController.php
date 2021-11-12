@@ -80,7 +80,13 @@ class BookController extends Controller
      */
     public function update(Request $request, Book $book)
     {
-        //
+        $book->update(
+            $request->validate([
+                'author' => 'required|min:3',
+            ])
+        );
+
+        return redirect()->back();
     }
 
     /**
