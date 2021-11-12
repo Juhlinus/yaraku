@@ -44,4 +44,19 @@ class BookListingTest extends TestCase
         $response->assertRedirect('/');
         $this->assertCount(1, Book::all());
     }
+
+    /** @test */
+    public function it_can_delete_a_book(): void
+    {
+        $book = Book::factory()
+            ->create([
+                'title' => $this->faker->sentence,
+                'author' => $this->faker->name
+            ]);
+
+        $response = $this->delete('books/' . $book->id);
+
+        $response->assertRedirect('/');
+        $this->assertCount(0, Book::all());
+    }
 }
