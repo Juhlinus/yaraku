@@ -58,4 +58,19 @@ class BookTest extends TestCase
             Book::sortedOrLatest([])->pluck('id'),
         );
     }
+
+    /** @test */
+    public function it_can_be_searched(): void
+    {
+        Book::factory()
+            ->create([
+                'title' => 'Grapes of Wrath',
+            ]);
+
+        Book::factory()
+            ->count(10)
+            ->create();
+
+        $this->assertEquals(1, Book::filterBy(['search' => 'gRaPeS', 'column' => 'title'])->count());
+    }
 }

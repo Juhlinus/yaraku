@@ -124,4 +124,55 @@ class BookListingTest extends TestCase
         $invalid_response = $this->get('/?direction=test');
         $invalid_response->assertInvalid('direction');
     }
+
+    /** @test */
+    public function it_lists_books_filtered_by_search(): void
+    {    
+        Book::factory()
+            ->count(15)
+            ->create([
+                'title' => $this->faker->sentence,
+                'author' => $this->faker->name
+            ])->sortBy('title');
+
+        Book::factory()
+            ->create([
+                'title' => 'Grapes of Wrath',
+            ]);
+
+        Book::factory()
+            ->create([
+                'title' => 'Grapes of Bath',
+            ]);
+
+        $response = $this->get('/?search=Grapes+of&column=title');
+        $response->assertViewHas('books', fn ($items) => $items->count() === 2);
+    }
+
+    /** @test */
+    public function it_silently_fails_and_redirects_when_either_the_column_or_search_fields_are_missing(): void
+    {    
+        Book::factory()
+            ->count(15)
+            ->create([
+                'title' => $this->faker->sentence,
+                'author' => $this->faker->name
+            ])->sortBy('title');
+
+        Book::factory()
+            ->create([
+                'title' => 'Grapes of Wrath',
+            ]);
+
+        Book::factory()
+            ->create([
+                'title' => 'Grapes of Bath',
+            ]);
+
+        $first_response = $this->get('/?search=Grapes+of');
+        $second_response = $this->get('/?column=author');
+
+        $first_response->assertRedirect('/');
+        $second_response->assertRedirect('/');
+    }
 }

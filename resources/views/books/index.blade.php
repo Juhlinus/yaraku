@@ -28,6 +28,25 @@
     </div>
   </form>
 
+  <div class="max-w-sm mb-2">
+    <form action="/" method="GET">
+      <label for="search" class="block text-sm font-medium text-gray-700">Search</label>
+      <div class="mt-1 relative rounded-md shadow-sm">
+        <div class="absolute inset-y-0 left-0 flex items-center">
+          <label for="column" class="sr-only">Column</label>
+          <select id="column" name="column" autocomplete="column" class="focus:ring-indigo-500 focus:border-indigo-500 h-full py-0 pl-3 pr-7 border-transparent bg-transparent text-gray-500 sm:text-sm rounded-md">
+            <option value="title">Title</option>
+            <option value="author">Author</option>
+          </select>
+        </div>
+        <input type="text" name="search" id="search" class="focus:ring-indigo-500 focus:border-indigo-500 block w-full pl-24 sm:text-sm border-gray-300 rounded-md" placeholder="Grapes of wrath" value="{{ request()->search }}">
+        <div class="absolute inset-y-0 right-0 flex items-center">
+          <input type="submit" name="submit" value="Search" class="cursor-pointer bg-indigo-600 border border-transparent rounded-r-md shadow-sm py-2 px-4 inline-flex justify-center text-sm font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+        </div>
+      </div>
+    </form>
+  </div>
+
   <div class="flex flex-col">
     <div class="-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
       <div class="py-2 align-middle inline-block min-w-full sm:px-6 lg:px-8">

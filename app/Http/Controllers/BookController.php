@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Book;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\Validator;
 
 class BookController extends Controller
 {
@@ -15,7 +16,7 @@ class BookController extends Controller
      */
     public function index(Request $request)
     {
-        $validated = $request->validate([
+        $sortValidator = Validator::make($request->all(['sort_by', 'direction']), [
             'sort_by' => [
                 'nullable',
                 Rule::in(['author', 'title']),
@@ -26,7 +27,17 @@ class BookController extends Controller
             ],
         ]);
 
-        $books = \App\Models\Book::sortedOrLatest($validated)
+        $searchValidator = Validator::make($request->all(['column', 'search']), [
+            'column' => 'required_unless:search,null',
+            'search' => 'required_unless:column,null',
+        ]);
+
+        if ($searchValidator->fails()) {
+            return redirect('/');
+        }
+
+        $books = \App\Models\Book::sortedOrLatest(array_filter($sortValidator->validated()))
+            ->filterBy(array_filter($searchValidator->validated()))
             ->get();
 
         return view('books.index', [
