@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Book;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 
 class BookController extends Controller
 {
@@ -12,12 +13,27 @@ class BookController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        $books = \App\Models\Book::latest()->get();
+        $validated = $request->validate([
+            'sort_by' => [
+                'nullable',
+                Rule::in(['author', 'title']),
+            ],
+            'direction' => [
+                'nullable',
+                Rule::in(['desc', 'asc']),
+            ],
+        ]);
+
+        $books = \App\Models\Book::sortedOrLatest($validated)
+            ->get();
 
         return view('books.index', [
             'books' => $books,
+            'direction' => $request->get('direction', 'desc') === 'desc' 
+                ? 'asc' 
+                : 'desc',
         ]);
     }
 

@@ -16,6 +16,7 @@ class BookFactory extends Factory
         return [
             'title' => $this->faker->sentence,
             'author' => $this->faker->name,
+            'created_at' => $this->faker->date,
         ];
     }
 }

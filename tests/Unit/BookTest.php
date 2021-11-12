@@ -35,4 +35,27 @@ class BookTest extends TestCase
 
         $this->assertEquals($author, $book->author);
     }
+
+    /** @test */
+    public function it_can_be_sorted(): void
+    {
+        $books = Book::factory()
+            ->count(10)
+            ->create();
+
+        $this->assertEquals(
+            $books->sortBy('title')->pluck('id'), 
+            Book::sortedOrLatest(['sort_by' => 'title'])->pluck('id'),
+        );
+
+        $this->assertEquals(
+            $books->sortByDesc('title')->pluck('id'), 
+            Book::sortedOrLatest(['sort_by' => 'title', 'direction' => 'desc'])->pluck('id'),
+        );
+
+        $this->assertEquals(
+            $books->sortByDesc('created_at')->pluck('id'), 
+            Book::sortedOrLatest([])->pluck('id'),
+        );
+    }
 }
