@@ -29,4 +29,19 @@ class BookListingTest extends TestCase
             fn ($items) => $items->pluck('id')->toArray() === $books->pluck('id')->toArray(),
         );
     }
+
+    /** @test */
+    public function it_can_add_books(): void
+    {
+        $book = Book::factory()
+            ->make([
+                'title' => $this->faker->sentence,
+                'author' => $this->faker->name
+            ])->toArray();
+
+        $response = $this->post('books', $book);
+
+        $response->assertRedirect('/');
+        $this->assertCount(1, Book::all());
+    }
 }

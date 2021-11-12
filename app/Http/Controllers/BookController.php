@@ -39,7 +39,14 @@ class BookController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        Book::create(
+            $request->validate([
+                'title' => 'required|min:3',
+                'author' => 'required|min:3',
+            ])
+        );
+
+        return redirect()->back();
     }
 
     /**
