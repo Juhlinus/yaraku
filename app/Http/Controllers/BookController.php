@@ -14,7 +14,11 @@ class BookController extends Controller
      */
     public function index()
     {
-        //
+        $books = \App\Models\Book::latest()->get();
+
+        return view('books.index', [
+            'books' => $books,
+        ]);
     }
 
     /**
