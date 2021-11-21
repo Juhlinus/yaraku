@@ -1,7 +1,0 @@
-version: "3"
-
-services:
-  mysql:
-    # Had problems with manifest not being found for my M1 mac.
-    # ERROR: no matching manifest for linux/arm64/v8 in the manifest list entries
-    platform: linux/x86_64 
