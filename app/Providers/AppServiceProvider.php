@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use Illuminate\Routing\UrlGenerator;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -23,6 +24,12 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        //
+        UrlGenerator::macro('append', function ($parameters) {
+            return sprintf(
+                '%s/?%s', 
+                url('/'), 
+                http_build_query(array_merge(request()->all(), $parameters))
+            );
+        });
     }
 }
