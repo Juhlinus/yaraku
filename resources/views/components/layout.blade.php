@@ -7,8 +7,8 @@
   <link href="{{ asset('css/app.css') }}" rel="stylesheet">
 </head>
 <body class="antialiased bg-gray-50">
-  <div class="max-w-screen-xl mx-auto">
-    <header>
+  <div class="min-w-xs max-w-screen-xl mx-auto">
+    <header class="px-3 xl:px-0">
       <h1 class="text-2xl font-medium pt-2 pb-3">Yaruka Web Assignment</h1>
     </header>
     <div>

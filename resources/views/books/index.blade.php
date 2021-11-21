@@ -1,5 +1,5 @@
 <x-layout>
-  <form action="/books" method="POST" class="mb-6">
+  <form action="/books" method="POST" class="mb-6 px-3 xl:px-0">
     @csrf
     <div class="shadow sm:rounded-md sm:overflow-hidden">
       <div class="bg-white py-6 px-4 space-y-6 sm:p-6">
@@ -28,22 +28,68 @@
     </div>
   </form>
 
-  <div class="max-w-sm mb-2">
-    <form action="/" method="GET">
-      <label for="search" class="block text-sm font-medium text-gray-700">Search</label>
-      <div class="mt-1 relative rounded-md shadow-sm">
-        <div class="absolute inset-y-0 left-0 flex items-center">
-          <label for="column" class="sr-only">Column</label>
-          <select id="column" name="column" autocomplete="column" class="focus:ring-indigo-500 focus:border-indigo-500 h-full py-0 pl-3 pr-7 border-transparent bg-transparent text-gray-500 sm:text-sm rounded-md">
-            <option value="title">Title</option>
-            <option value="author">Author</option>
-          </select>
+  <div class="flex flex-col justify-between px-3 mb-2 xl:px-0 md:flex-row">
+    <div class="md:max-w-sm flex-grow">
+      <form action="/" method="GET">
+        <label for="search" class="block text-sm font-medium text-gray-700">Search</label>
+        <div class="mt-1 relative rounded-md shadow-sm">
+          <div class="absolute inset-y-0 left-0 flex items-center">
+            <label for="column" class="sr-only">Column</label>
+            <select id="column" name="column" autocomplete="column" class="focus:ring-indigo-500 focus:border-indigo-500 h-full py-0 pl-3 pr-7 border-transparent bg-transparent text-gray-500 sm:text-sm rounded-md">
+              <option value="title">Title</option>
+              <option value="author">Author</option>
+            </select>
+          </div>
+          <input type="text" name="search" id="search" class="focus:ring-indigo-500 focus:border-indigo-500 block w-full pl-24 sm:text-sm border-gray-300 rounded-md" placeholder="Grapes of wrath" value="{{ request()->search }}">
+          <div class="absolute inset-y-0 right-0 flex items-center">
+            <input type="submit" name="submit" value="Search" class="cursor-pointer bg-indigo-600 border border-transparent rounded-r-md shadow-sm py-2 px-4 inline-flex justify-center text-sm font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+          </div>
         </div>
-        <input type="text" name="search" id="search" class="focus:ring-indigo-500 focus:border-indigo-500 block w-full pl-24 sm:text-sm border-gray-300 rounded-md" placeholder="Grapes of wrath" value="{{ request()->search }}">
-        <div class="absolute inset-y-0 right-0 flex items-center">
-          <input type="submit" name="submit" value="Search" class="cursor-pointer bg-indigo-600 border border-transparent rounded-r-md shadow-sm py-2 px-4 inline-flex justify-center text-sm font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+      </form>
+    </div>
+
+    <form method="GET" action="/download" class="flex items-end py-2 sm:py-0">
+      <fieldset class="w-full">
+        <legend class="sr-only">File format</legend>
+        <div class="space-x-1 flex items-center justify-between sm:space-x-10">
+          <div class="flex items-center">
+            <input id="csv" name="format" type="radio" checked class="focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-300" value="csv">
+            <label for="csv" class="ml-3 block text-sm font-medium text-gray-700">
+              CSV
+            </label>
+          </div>
+
+          <div class="flex items-center">
+            <input id="xml" name="format" type="radio" class="focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-300" value="xml">
+            <label for="xml" class="ml-3 block text-sm font-medium text-gray-700">
+              XML
+            </label>
+          </div>
+
+          <fieldset>
+            <div class="relative flex items-start">
+              <div class="flex items-center h-5">
+                <input id="title" name="fields[]" type="checkbox" class="focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-300 rounded" value="title" checked>
+              </div>
+              <div class="ml-3 text-sm">
+                <label for="title" class="font-medium text-gray-700">Title</label>
+              </div>
+            </div>
+            <div class="relative flex items-start">
+              <div class="flex items-center h-5">
+                <input id="author" name="fields[]" type="checkbox" class="focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-300 rounded" value="author" checked>
+              </div>
+              <div class="ml-3 text-sm">
+                <label for="author" class="font-medium text-gray-700">Author</label>
+              </div>
+            </div>
+          </fieldset>
+
+          <button type="submit" class="bg-indigo-600 border border-transparent rounded-md shadow-sm py-2 px-4 inline-flex justify-center text-sm font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+            Download
+          </button>
         </div>
-      </div>
+      </fieldset>
     </form>
   </div>
 
