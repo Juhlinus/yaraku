@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\Book;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
+use App\Http\Requests\DownloadRequest;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 
 class BookController extends Controller
@@ -12,6 +14,7 @@ class BookController extends Controller
     /**
      * Display a listing of the resource.
      *
+     * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
     public function index(Request $request)
@@ -127,5 +130,24 @@ class BookController extends Controller
         $book->delete();
 
         return redirect()->back();
+    }
+
+    /**
+     * Download the listing of the resource.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function download(DownloadRequest $request)
+    {
+        $validated = $request->validated();
+
+        $filename = sprintf('books.%s', $validated['format']);
+
+        Book::when(! empty($validated['fields']), fn ($books) => $books->select($validated['fields']))
+            ->get()
+            ->toCsvOrXml($validated, $filename);
+
+        return Storage::download($filename);
     }
 }

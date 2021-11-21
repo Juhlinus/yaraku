@@ -4,6 +4,7 @@ namespace Tests\Feature;
 
 use Tests\TestCase;
 use App\Models\Book;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
@@ -174,5 +175,113 @@ class BookListingTest extends TestCase
 
         $first_response->assertRedirect('/');
         $second_response->assertRedirect('/');
+    }
+
+    /** @test */
+    public function it_can_download_the_book_listing_in_xml_or_csv_format(): void
+    {
+        Storage::fake();
+
+        Book::factory()
+            ->count(15)
+            ->create();
+    
+        $first_response = $this->get('/download?format=xml&fields[]=author&fields[]=title');
+        $second_response = $this->get('/download?format=csv&fields[]=author&fields[]=title');
+    
+        $first_response->assertDownload('books.xml');
+        $second_response->assertDownload('books.csv');
+    }
+
+    /** @test */
+    public function it_can_only_download_predetermined_or_all_fields(): void
+    { 
+        Storage::fake();
+
+        Book::factory()
+            ->count(15)
+            ->create();
+    
+        $first_valid_response = $this->get('/download?format=csv&fields[]=author');
+        $second_valid_response = $this->get('/download?format=csv&fields[]=title');
+        $third_valid_response = $this->get('/download?format=csv&fields[]=author&fields[]=title');
+    
+        $first_invalid_response = $this->get('/download?format=csv&fields[]=id');
+        $second_invalid_response = $this->get('/download?format=csv&fields[]=created_at');
+        $third_invalid_response = $this->get('/download?format=csv&fields[]=id&fields[]=created_at');
+    
+        $first_valid_response->assertOk();
+        $second_valid_response->assertOk();
+        $third_valid_response->assertOk();
+
+        $first_invalid_response->assertInvalid('fields');
+        $second_invalid_response->assertInvalid('fields');
+        $third_invalid_response->assertInvalid('fields');
+    }
+
+    /** @test */
+    public function it_converts_the_book_listing_to_valid_csv_with_a_header(): void
+    {
+        Storage::fake();
+
+        Book::factory()
+            ->count(15)
+            ->create();
+    
+        $response = $this->get('/download?format=csv&fields[]=author');
+
+        $response->assertDownload('books.csv');
+        Storage::assertExists('books.csv');
+
+        $expected = array_map('array_values', Book::select(['author'])->get()->toArray());
+
+        array_unshift($expected, ['author']);
+
+        $actual = array_map('str_getcsv', file(Storage::path('books.csv')));
+
+        $this->assertSame($expected, $actual);
+    }
+
+    /** @test */
+    public function it_converts_the_book_listing_to_valid_xml(): void
+    {
+        Storage::fake();
+
+        $books = Book::factory()
+            ->count(15)
+            ->create();
+
+        $this->get('/download?format=xml&fields[]=author');
+        $first_actual = Storage::get('books.xml');
+
+        $this->get('/download?format=xml&fields[]=title');
+        $second_actual = Storage::get('books.xml');
+
+        $this->get('/download?format=xml&fields[]=title&fields[]=author');
+        $third_actual = Storage::get('books.xml');
+
+        Storage::assertExists('books.xml');
+
+        $first_expected = $books->map(function ($book) {
+            return '<book><author>' . $book->author .  '</author></book>';
+        })->push("</root>\n")
+        ->prepend("<?xml version=\"1.0\"?>\n<root>")
+        ->join("");
+
+        $second_expected = $books->map(function ($book) {
+            return '<book><title>' . $book->title .  '</title></book>';
+        })->push("</root>\n")
+        ->prepend("<?xml version=\"1.0\"?>\n<root>")
+        ->join("");
+
+        $third_expected = $books->map(function ($book) {
+            return '<book><title>' . $book->title .  '</title><author>' . $book->author .  '</author></book>';
+        })->push("</root>\n")
+        ->prepend("<?xml version=\"1.0\"?>\n<root>")
+        ->join("");
+
+        $this->assertEquals($first_expected, $first_actual);
+        $this->assertEquals($second_expected, $second_actual);
+        $this->assertEquals($third_expected, $third_actual);
     }
 }

@@ -15,4 +15,5 @@ use App\Http\Controllers\BookController;
 */
 
 Route::get('/', [BookController::class, 'index']);
+Route::get('/download', [BookController::class, 'download']);
 Route::resource('books', BookController::class);
